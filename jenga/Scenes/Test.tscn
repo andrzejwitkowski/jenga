@@ -1,4 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://db12w5b003j45"]
+[gd_scene load_steps=12 format=3 uid="uid://db12w5b003j45"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://crns67wign6o" path="res://Scenes/test_phy_mat.tres" id="1_ko2s7"]
+[ext_resource type="Script" uid="uid://do4evk1jg5ipu" path="res://Scenes/capsule3.gd" id="2_gxb1y"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ot306"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -13,10 +16,25 @@ sky = SubResource("Sky_ko2s7")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ot306"]
+albedo_color = Color(0.105882354, 0.34117648, 1, 1)
+
 [sub_resource type="BoxMesh" id="BoxMesh_0dy5s"]
+material = SubResource("StandardMaterial3D_ot306")
 size = Vector3(15, 0.5, 15)
 
-[node name="Node" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_ko2s7"]
+size = Vector3(15, 0.5, 15)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ko2s7"]
+albedo_color = Color(0.9413577, 0.627194, 0.8583752, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_gxb1y"]
+material = SubResource("StandardMaterial3D_ko2s7")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ot306"]
+
+[node name="Test" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_gxb1y")
@@ -26,8 +44,27 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-0.7384818, 0.45681405, -0.4959492, 0, 0.7355313, 0.67749083, 0.67427343, 0.50031465, -0.5431765, -14.671714, 20.042278, -16.068844)
+transform = Transform3D(-0.7021795, 0.46144098, -0.5422326, 0, 0.76156265, 0.6480913, 0.71199995, 0.45507643, -0.5347537, -14.906877, 21.522202, -14.70127)
 
 [node name="Floor" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_0dy5s")
 skeleton = NodePath("../Camera3D")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/StaticBody3D"]
+shape = SubResource("BoxShape3D_ko2s7")
+
+[node name="Capsule3" type="RigidBody3D" parent="."]
+transform = Transform3D(0.7099318, -0.5768757, 0.40399426, 0.5638256, 0.8092844, 0.16480121, -0.42201605, 0.11078471, 0.899794, -1.8382168, 16.669409, 0.6992626)
+physics_material_override = ExtResource("1_ko2s7")
+script = ExtResource("2_gxb1y")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Capsule3"]
+transform = Transform3D(0.9999994, 0, 0, 0, 1, 0, 0, 0, 0.99999946, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_gxb1y")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Capsule3"]
+shape = SubResource("CapsuleShape3D_ot306")
+
+[connection signal="sleeping_state_changed" from="Capsule3" to="Capsule3" method="_on_sleeping_state_changed"]
